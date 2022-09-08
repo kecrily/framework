@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { joinURL } from 'ufo'
 // import { isWindows } from 'std-env'
-import { setup, fetch, $fetch, startServer, createPage } from '@nuxt/test-utils'
+import { setup, fetch, $fetch, startServer, createPage, url } from '@nuxt/test-utils'
 // eslint-disable-next-line import/order
 import { expectNoClientErrors, renderPage } from './utils'
 
@@ -399,6 +399,20 @@ describe('automatically keyed composables', () => {
   })
   it('should match server-generated keys', async () => {
     await expectNoClientErrors('/keyed-composables')
+  })
+})
+
+describe('single suspense tree', () => {
+  it('should generate a single suspense tree on initial hydration', async () => {
+    const page = await createPage()
+    const logs: string[] = []
+    page.on('console', (msg) => {
+      logs.push(msg.text())
+    })
+    await page.goto(url('/another-parent'))
+    await page.waitForLoadState('networkidle')
+    expect(logs.length).toBe(2)
+    expect(logs.every(log => log === 'isHydrating: true'))
   })
 })
 
