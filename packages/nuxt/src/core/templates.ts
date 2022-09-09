@@ -154,10 +154,9 @@ export const layoutTemplate: NuxtTemplate<TemplateContext> = {
   filename: 'layouts.mjs',
   getContents ({ app }) {
     const layoutsObject = genObjectFromRawEntries(Object.values(app.layouts).map(({ name, file }) => {
-      return [name, `defineAsyncComponent(${genDynamicImport(file)})`]
+      return [name, genDynamicImport(file)]
     }))
     return [
-      'import { defineAsyncComponent } from \'vue\'',
       `export default ${layoutsObject}`
     ].join('\n')
   }
